@@ -1,0 +1,46 @@
+{
+  "name": "matchback-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Enterprise matchback automation platform for email campaign attribution",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:cov": "turbo run test:cov",
+    "test:e2e": "turbo run test:e2e",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "type-check": "turbo run type-check",
+    "db:migrate": "cd apps/api && npm run migration:run",
+    "db:migrate:create": "cd apps/api && npm run migration:create",
+    "db:migrate:revert": "cd apps/api && npm run migration:revert",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "turbo": "^1.12.4",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edwinlov3tt/email-matchback.git"
+  },
+  "author": "",
+  "license": "UNLICENSED"
+}

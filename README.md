@@ -2,60 +2,70 @@
 
 Enterprise-grade matchback processing system that automates the entire workflow of email campaign attribution, from client data collection through vendor matching to final ROI reporting.
 
-## 🎯 Overview
+## Overview
 
 The Matchback Platform solves the complex problem of accurately attributing customer visits and sales to email marketing campaigns. It maintains complete privacy separation between clients and vendors while providing accurate, defensible attribution metrics.
 
-### Key Features
-- **Automated Campaign Workflows**: Set it and forget it campaign scheduling
-- **Privacy-First Architecture**: Complete isolation between client and vendor data
-- **Smart Pattern Analysis**: Automatically identifies campaign-influenced customers
-- **Multi-Market Support**: Handles geographic segmentation with cross-market detection
-- **Comprehensive Reporting**: Excel-based reports with pivot tables and CAC analysis
+**Core Value**: Reduces matchback processing time from 2-3 days to 2-3 hours while eliminating manual errors.
 
-## 🚀 Quick Start
+### Key Features
+- Automated Campaign Workflows - Set it and forget it campaign scheduling
+- Privacy-First Architecture - Complete isolation between client and vendor data
+- Smart Pattern Analysis - Automatically identifies campaign-influenced customers
+- Multi-Market Support - Handles geographic segmentation with cross-market detection
+- Comprehensive Reporting - Excel-based reports with pivot tables and CAC analysis
+
+## Quick Start
+
+### Prerequisites
+- Node.js 18+
+- Docker Desktop (for PostgreSQL and Redis)
+- Resend account for email
+- Cloudflare R2 for file storage
+
+### Setup
+
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/matchback-platform.git
-cd matchback-platform
+git clone https://github.com/edwinlov3tt/email-matchback.git
+cd email-matchback
 
-# Install dependencies
+# Install all dependencies
 npm install
 
 # Set up environment variables
-cp .env.example .env
-# Edit .env with your API keys and database credentials
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+# Edit .env files with your API keys
 
-# Run database migrations
-npm run migration:run
+# Start PostgreSQL and Redis
+docker-compose up -d
 
-# Start development server
+# Start development servers
 npm run dev
 
-# Access the application
+# Access points:
 # Frontend: http://localhost:3000
 # API: http://localhost:3001
 ```
 
-## 📋 Prerequisites
+## Tech Stack
 
-- Node.js 18+ and npm
-- PostgreSQL 14+
-- Redis 6+
-- SendGrid account for email processing
-- Domain with email routing capability (for campaign endpoints)
+- Frontend: Next.js 14 with App Router, TypeScript, TailwindCSS, Framer Motion
+- Backend: NestJS with TypeScript, TypeORM, Bull Queue
+- Database: PostgreSQL 15, Redis 7
+- Email: Resend for transactional email
+- Storage: Cloudflare R2 (S3-compatible)
+- Auth: NextAuth.js with email magic links
+- Monorepo: npm workspaces with Turborepo
 
-## 🏗️ Architecture
+## Architecture
+
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Client    │────▶│   Platform   │────▶│   Vendor    │
-│   (Excel)   │     │              │     │   (Email)   │
-└─────────────┘     └──────────────┘     └─────────────┘
-                           │
-                    ┌──────▼──────┐
-                    │  PostgreSQL  │
-                    │    Redis     │
-                    └──────────────┘
+Client Upload → Data Sanitization → Vendor Matching → Pattern Analysis → Report Generation
+     ↓                 ↓                    ↓                ↓                  ↓
+  Excel File      Remove PII          Email via Resend   Correct Flaws    Pivot Tables
+                  Add DCM_IDs         Get Matches        Classify Type    CAC/ROAS
 ```
 
 ### Core Workflow
@@ -184,17 +194,60 @@ docker-compose up -d
 docker-compose logs -f api
 ```
 
-## 📝 API Documentation
+## Development
 
-API documentation is available at `http://localhost:3001/api/docs` when running in development mode.
+### Monorepo Structure
 
-### Key Endpoints
+```
+email-matchback/
+├── apps/
+│   ├── api/          # NestJS backend
+│   └── web/          # Next.js frontend
+├── packages/
+│   ├── types/        # Shared TypeScript types
+│   └── utils/        # Shared utilities (Excel, market detection)
+├── docs/
+│   └── FEATURE-BRANCHES.md  # Feature branch strategy
+├── context/          # Requirements and sample files
+└── docker-compose.yml
+```
 
-- `POST /campaigns` - Create new campaign
-- `POST /campaigns/:id/upload` - Upload client data
-- `GET /campaigns/:id/status` - Check campaign status
-- `GET /campaigns/:id/report` - Download final report
-- `POST /webhooks/email` - Receive vendor emails
+### Feature Branch Strategy
+
+See `docs/FEATURE-BRANCHES.md` for detailed feature branch strategy for parallel development.
+
+**10 Feature Branches**:
+1. database-schema
+2. campaign-management
+3. file-processing
+4. pattern-analysis
+5. email-integration
+6. report-generation
+7. glassmorphic-ui
+8. authentication
+9. dashboard-pages
+10. data-sanitization
+
+### Development Commands
+
+```bash
+# Start all services
+npm run dev
+
+# Run tests
+npm test
+
+# Lint and format
+npm run lint:fix
+npm run format
+
+# Type check
+npm run type-check
+
+# Database
+npm run db:migrate
+npm run db:migrate:create -- MigrationName
+```
 
 ## 🤝 Contributing
 

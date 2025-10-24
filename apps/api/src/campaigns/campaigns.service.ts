@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import type { CampaignStatus } from '@matchback/types';
 import { Campaign } from './entities/campaign.entity';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
@@ -121,6 +122,13 @@ export class CampaignsService {
     Object.assign(campaign, updateCampaignDto);
 
     return this.campaignRepository.save(campaign);
+  }
+
+  /**
+   * Update campaign status (convenience method)
+   */
+  async updateStatus(id: string, status: CampaignStatus): Promise<Campaign> {
+    return this.update(id, { status });
   }
 
   /**

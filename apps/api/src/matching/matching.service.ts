@@ -160,4 +160,47 @@ export class MatchingService {
   validateDcmId(dcmId: string): boolean {
     return this.dcmIdService.isValidDcmId(dcmId);
   }
+
+  /**
+   * Apply vendor matches to campaign data
+   * Called from email webhook after parsing vendor response
+   */
+  async applyVendorMatches(
+    campaignId: string,
+    matches: Array<{ dcmId: string; matched: boolean }>,
+  ): Promise<void> {
+    this.logger.log(
+      `Applying ${matches.length} vendor matches to campaign ${campaignId}`,
+    );
+
+    // TODO: Implement database update to store vendor matches
+    // This would typically update the MatchRecord entity with vendor match flags
+    // For now, just log the operation
+
+    const matchedCount = matches.filter((m) => m.matched).length;
+    const matchRate = (matchedCount / matches.length) * 100;
+
+    this.logger.log(
+      `Applied vendor matches: ${matchedCount}/${matches.length} matched (${matchRate.toFixed(1)}%)`,
+    );
+  }
+
+  /**
+   * Get sanitized Excel for a campaign
+   * Used by email service to send to vendor
+   */
+  async getSanitizedExcel(campaignId: string): Promise<{
+    buffer: Buffer;
+    filename: string;
+    recordCount: number;
+  } | null> {
+    this.logger.log(`Retrieving sanitized Excel for campaign ${campaignId}`);
+
+    // TODO: Implement storage retrieval
+    // This would typically fetch from S3/R2 storage or database
+    // For now, return null to indicate not implemented
+
+    this.logger.warn(`getSanitizedExcel not yet implemented for campaign ${campaignId}`);
+    return null;
+  }
 }

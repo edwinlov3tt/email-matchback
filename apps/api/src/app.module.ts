@@ -12,6 +12,7 @@ import { FileProcessingModule } from './file-processing/file-processing.module';
 import { MatchingModule } from './matching/matching.module';
 import { ReportsModule } from './reports/reports.module';
 import { JobsModule } from './jobs/jobs.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { JobsModule } from './jobs/jobs.module';
     MatchingModule,
     ReportsModule,
     JobsModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -116,6 +116,24 @@ class ApiClient {
   async getCampaignStats(): Promise<CampaignStats> {
     return this.request('/campaigns/stats');
   }
+
+  // Upload operations
+  async getUploadedFiles(campaignId: string): Promise<UploadedFile[]> {
+    return this.request(`/campaigns/${campaignId}/uploads`);
+  }
+
+  async processCampaign(campaignId: string): Promise<void> {
+    return this.request(`/campaigns/${campaignId}/process`, {
+      method: 'POST',
+    });
+  }
+}
+
+export interface UploadedFile {
+  filename: string;
+  size: number;
+  uploadedAt: string;
+  type: 'client' | 'vendor' | 'unknown';
 }
 
 export const api = new ApiClient();

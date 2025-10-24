@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { api, Campaign } from '@/lib/api';
 import { GlassCard, GlassButton, StatusBadge } from '@/components/ui';
-import { RefreshCw, Mail, Calendar, Target, TrendingUp } from 'lucide-react';
+import { CampaignFileUpload } from '@/components/campaigns/CampaignFileUpload';
+import { UploadedFilesList } from '@/components/campaigns/UploadedFilesList';
+import { CampaignActions } from '@/components/campaigns/CampaignActions';
+import { MetricsVisualization } from '@/components/campaigns/MetricsVisualization';
+import { CampaignTimeline } from '@/components/campaigns/CampaignTimeline';
+import { RefreshCw, Mail, Calendar } from 'lucide-react';
 
 export default function CampaignDetailsPage() {
   const params = useParams();
@@ -77,7 +82,7 @@ export default function CampaignDetailsPage() {
           >
             ← Back to Campaigns
           </Link>
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">
                 {campaign.name}
@@ -88,11 +93,14 @@ export default function CampaignDetailsPage() {
                 <span className="text-white/60">{campaign.billingNumber}</span>
               </div>
             </div>
+            <div className="lg:max-w-md">
+              <CampaignActions campaign={campaign} onActionComplete={loadCampaign} />
+            </div>
           </div>
         </div>
 
-        {/* Campaign Info Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Campaign Info and Timeline Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Basic Info */}
           <GlassCard>
             <h2 className="text-xl font-semibold text-white mb-4">
@@ -179,62 +187,39 @@ export default function CampaignDetailsPage() {
               </div>
             </div>
           </GlassCard>
+
+          {/* Campaign Timeline */}
+          <div className="lg:col-span-2">
+            <CampaignTimeline campaign={campaign} />
+          </div>
         </div>
 
-        {/* Metrics */}
-        {campaign.metrics && (
-          <GlassCard>
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Campaign Metrics
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {campaign.metrics.totalRecords !== undefined && (
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-blue-400" />
-                    <p className="text-sm text-white/60">Total Records</p>
-                  </div>
-                  <p className="text-2xl font-bold text-white">
-                    {campaign.metrics.totalRecords.toLocaleString()}
-                  </p>
-                </div>
-              )}
-              {campaign.metrics.matchedRecords !== undefined && (
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-green-400" />
-                    <p className="text-sm text-white/60">Matched</p>
-                  </div>
-                  <p className="text-2xl font-bold text-white">
-                    {campaign.metrics.matchedRecords.toLocaleString()}
-                  </p>
-                </div>
-              )}
-              {campaign.metrics.matchRate !== undefined && (
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="w-4 h-4 text-purple-400" />
-                    <p className="text-sm text-white/60">Match Rate</p>
-                  </div>
-                  <p className="text-2xl font-bold text-white">
-                    {(campaign.metrics.matchRate * 100).toFixed(1)}%
-                  </p>
-                </div>
-              )}
-              {campaign.metrics.newCustomers !== undefined && (
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-yellow-400" />
-                    <p className="text-sm text-white/60">New Customers</p>
-                  </div>
-                  <p className="text-2xl font-bold text-white">
-                    {campaign.metrics.newCustomers.toLocaleString()}
-                  </p>
-                </div>
-              )}
+        {/* Metrics Visualization */}
+        <MetricsVisualization campaign={campaign} />
+
+        {/* File Management Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* File Uploads */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CampaignFileUpload
+                campaignId={campaignId}
+                type="client-data"
+                onUploadComplete={loadCampaign}
+              />
+              <CampaignFileUpload
+                campaignId={campaignId}
+                type="vendor-response"
+                onUploadComplete={loadCampaign}
+              />
             </div>
-          </GlassCard>
-        )}
+          </div>
+
+          {/* Uploaded Files List */}
+          <div>
+            <UploadedFilesList campaignId={campaignId} />
+          </div>
+        </div>
 
         {/* Notes */}
         {campaign.notes && (

@@ -6,6 +6,12 @@ import { AppService } from './app.service';
 import { Campaign } from './campaigns/entities/campaign.entity';
 import { MatchRecord } from './campaigns/entities/match-record.entity';
 import { User } from './users/entities/user.entity';
+import { CampaignsModule } from './campaigns/campaigns.module';
+import { UploadsModule } from './uploads/uploads.module';
+import { FileProcessingModule } from './file-processing/file-processing.module';
+import { MatchingModule } from './matching/matching.module';
+import { ReportsModule } from './reports/reports.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -20,9 +26,15 @@ import { User } from './users/entities/user.entity';
       password: process.env.DATABASE_PASSWORD || 'matchback_dev_password',
       database: process.env.DATABASE_NAME || 'matchback_db',
       entities: [Campaign, MatchRecord, User],
-      synchronize: process.env.NODE_ENV === 'development',
+      synchronize: false,
       logging: process.env.NODE_ENV === 'development',
     }),
+    CampaignsModule,
+    UploadsModule,
+    FileProcessingModule,
+    MatchingModule,
+    ReportsModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

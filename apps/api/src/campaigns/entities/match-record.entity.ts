@@ -12,24 +12,17 @@ import type { CustomerType } from '@matchback/types';
 import { Campaign } from './campaign.entity';
 
 @Entity('match_records')
-@Index(['dcmId'], { unique: true })
-@Index(['customerId'])
-@Index(['emailAddress'])
-@Index(['campaignId'])
 export class MatchRecord {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
-  @Index()
   dcmId: string;
 
   @Column({ type: 'varchar', length: 255 })
-  @Index()
   customerId: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  @Index()
   emailAddress: string | null;
 
   @Column({ type: 'date' })
@@ -61,7 +54,6 @@ export class MatchRecord {
   totalSales: number | null;
 
   @Column({ type: 'uuid' })
-  @Index()
   campaignId: string;
 
   @Column({ type: 'varchar', length: 100 })

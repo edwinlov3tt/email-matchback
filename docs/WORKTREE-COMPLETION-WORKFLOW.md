@@ -4,10 +4,87 @@ This guide explains what to do when you finish implementing a feature in a workt
 
 ## Table of Contents
 
-- [Single Feature Completion](#single-feature-completion)
+- [Automated Completion (Recommended)](#automated-completion-recommended)
+- [Manual Completion](#manual-completion)
 - [Phase Completion](#phase-completion)
 - [Common Issues](#common-issues)
 - [Quick Reference](#quick-reference)
+
+## Automated Completion (Recommended)
+
+Use the `complete-feature.sh` script for automatic PR creation, merging, and cleanup.
+
+### Usage
+
+```bash
+cd ~/projects/email-matchback-workspace/main
+
+# Complete a feature automatically
+./complete-feature.sh <worktree-name> "<PR Title>"
+
+# Examples:
+./complete-feature.sh database-schema "Database Schema Implementation"
+./complete-feature.sh ui-components "Glassmorphic UI Components"
+```
+
+### What It Does
+
+The script automatically:
+
+1. ✅ Commits any uncommitted changes
+2. ✅ Pushes to GitHub
+3. ✅ Creates Pull Request
+4. ✅ Waits for CI checks to pass
+5. ✅ Merges PR with squash and deletes branch
+6. ✅ Updates main worktree
+7. ✅ Updates all other active worktrees
+8. ✅ Prompts to remove completed worktree
+
+**Example:**
+
+```bash
+cd ~/projects/email-matchback-workspace/main
+./complete-feature.sh database-schema "Database Schema Implementation"
+
+# Output:
+# 🚀 Feature Completion Automation
+# ==================================
+#
+# 📍 Worktree: database-schema
+# 📝 PR Title: Database Schema Implementation
+#
+# 📋 Step 1: Checking for uncommitted changes...
+# ✅ Changes committed
+#
+# 📤 Step 2: Pushing to GitHub...
+# ✅ Pushed to origin/feature/database-schema
+#
+# 🔀 Step 3: Creating Pull Request...
+# ✅ PR created: https://github.com/edwinlov3tt/email-matchback/pull/1
+#
+# ⏳ Step 4: Checking CI status...
+# ✅ No CI checks configured
+#
+# 🔀 Step 5: Merging Pull Request...
+# ✅ PR merged and branch deleted
+#
+# 🔄 Step 6: Updating main worktree...
+# ✅ Main updated
+#
+# 🔄 Step 7: Updating other active worktrees...
+#   Updating ui-components...
+# ✅ Other worktrees updated
+#
+# 🗑️  Step 8: Removing completed worktree...
+# Remove worktree 'database-schema'? (y/n) y
+# ✅ Worktree removed
+#
+# 🎉 Feature completion successful!
+```
+
+---
+
+## Manual Completion
 
 ## Single Feature Completion
 

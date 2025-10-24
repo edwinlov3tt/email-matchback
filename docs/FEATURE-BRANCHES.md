@@ -2,6 +2,12 @@
 
 This document outlines the feature branch strategy for parallel development using multiple Claude Code instances.
 
+## Quick Reference
+
+**Task Instructions**: See [`../tasks/`](../tasks/) directory for detailed implementation instructions for each feature.
+
+**Parallel Development**: Up to 4 features can be developed simultaneously in each phase.
+
 ## Branch Structure
 
 ```
@@ -16,6 +22,116 @@ main (protected)
 ├── feature/authentication
 ├── feature/dashboard-pages
 └── feature/data-sanitization
+```
+
+## Parallel Development Matrix
+
+### Phase 1: Foundation (Week 1-2)
+
+**Can Run Simultaneously** - No file conflicts:
+
+| Instance | Branch | Files Modified | Blocks |
+|----------|--------|----------------|--------|
+| 1 | `database-schema` | `apps/api/src/campaigns/entities/*`<br>`apps/api/src/users/entities/*`<br>`apps/api/src/database/*` | Phases 2 & 3 |
+| 2 | `glassmorphic-ui` | `apps/web/components/ui/*`<br>`apps/web/app/components-demo/*` | dashboard-pages |
+
+**Why No Conflicts**: Different directories (backend vs frontend)
+
+---
+
+### Phase 2: Core Services (Week 3-4)
+
+**Requirements**: database-schema MUST be merged first
+
+**Can Run Simultaneously** - Different modules:
+
+| Instance | Branch | Files Modified | Dependencies | Blocks |
+|----------|--------|----------------|--------------|--------|
+| 1 | `campaign-management` | `apps/api/src/campaigns/campaigns.*`<br>`apps/api/src/campaigns/dto/*` | database-schema | email-integration<br>dashboard-pages |
+| 2 | `file-processing` | `apps/api/src/storage/*` | database-schema | email-integration<br>data-sanitization |
+| 3 | `authentication` | `apps/web/app/api/auth/*`<br>`apps/web/lib/auth.ts`<br>`apps/api/src/auth/*` | database-schema | - |
+| 4 | `pattern-analysis` | `apps/api/src/patterns/*` | database-schema | report-generation |
+
+**Why No Conflicts**: Separate NestJS modules, different directories
+
+---
+
+### Phase 3: Integration (Week 5-6)
+
+**Requirements**: Phase 2 components must be merged
+
+**Can Run Simultaneously** - Different concerns:
+
+| Instance | Branch | Files Modified | Dependencies |
+|----------|--------|----------------|--------------|
+| 1 | `email-integration` | `apps/api/src/email/*` | campaign-management<br>file-processing |
+| 2 | `report-generation` | `apps/api/src/reports/*` | pattern-analysis |
+| 3 | `dashboard-pages` | `apps/web/app/*` (pages)<br>`apps/web/components/dashboard/*`<br>`apps/web/components/campaigns/*` | glassmorphic-ui<br>campaign-management |
+| 4 | `data-sanitization` | `apps/api/src/matching/*` | file-processing |
+
+**Why No Conflicts**: Different modules and directories
+
+---
+
+## File Path Isolation Matrix
+
+This shows which directories each feature works in, ensuring zero conflicts:
+
+```
+apps/api/src/
+├── campaigns/
+│   ├── entities/         ✓ database-schema
+│   ├── campaigns.*       ✓ campaign-management
+│   └── dto/              ✓ campaign-management
+├── storage/              ✓ file-processing
+├── patterns/             ✓ pattern-analysis
+├── email/                ✓ email-integration
+├── reports/              ✓ report-generation
+├── matching/             ✓ data-sanitization
+├── auth/                 ✓ authentication
+└── users/entities/       ✓ database-schema
+
+apps/web/
+├── components/ui/        ✓ glassmorphic-ui
+├── components/
+│   ├── dashboard/        ✓ dashboard-pages
+│   └── campaigns/        ✓ dashboard-pages
+├── app/
+│   ├── campaigns/        ✓ dashboard-pages
+│   ├── upload/           ✓ dashboard-pages
+│   └── api/auth/         ✓ authentication
+└── lib/auth.ts           ✓ authentication
+```
+
+**Result**: Zero file overlap = Zero merge conflicts
+
+## Dependency Tree
+
+```
+Level 0 (No Dependencies):
+┌─────────────────────┬─────────────────────┐
+│ database-schema     │ glassmorphic-ui     │
+│ (backend entities)  │ (frontend UI)       │
+└──────────┬──────────┴──────────┬──────────┘
+           │                     │
+Level 1 (Needs Level 0):         │
+┌──────────┼─────────────────────┼──────────┐
+│          ▼                     │          │
+│  campaign-management           │          │
+│  file-processing               │          │
+│  authentication                │          │
+│  pattern-analysis              │          │
+└──────────┬──────────┬──────────┼──────────┘
+           │          │          │
+Level 2 (Needs Level 1):         │
+┌──────────▼─┬────────▼─┬────────▼─────────┐
+│ email-     │ report-  │ dashboard-pages  │
+│ integration│ generation│ (needs UI +      │
+│            │          │  campaign-mgmt)  │
+└────────────┴──────────┴──────────────────┘
+           │
+           ▼
+    data-sanitization
 ```
 
 ## Workflow
@@ -488,6 +604,40 @@ footer (optional)
 - `docs(readme): update setup instructions`
 - `test(excel): add date conversion tests`
 
+## Summary: Conflict-Free Parallel Development
+
+### Maximum Parallelization
+
+- **Phase 1**: 2 instances running simultaneously
+- **Phase 2**: 4 instances running simultaneously (after Phase 1)
+- **Phase 3**: 4 instances running simultaneously (after Phase 2)
+
+### Total Timeline: 6-8 weeks
+
+- Week 1-2: Foundation (2 parallel instances)
+- Week 3-4: Core Services (4 parallel instances)
+- Week 5-6: Integration (4 parallel instances)
+- Week 7-8: Testing and deployment
+
+### Conflict Prevention
+
+All features work in isolated directories with zero file overlap. The dependency tree ensures features only depend on merged code, never in-progress code.
+
+### Task Instructions
+
+Every feature has detailed task instructions in the `tasks/` directory with:
+- Exact type specifications from @matchback/types
+- Step-by-step implementation guides
+- Testing requirements
+- Completion summary requirements
+
+### Next Steps
+
+1. Push all branches to GitHub
+2. Start Phase 1 (database-schema + glassmorphic-ui)
+3. After Phase 1 merges, start Phase 2 (4 parallel features)
+4. After Phase 2 merges, start Phase 3 (4 parallel features)
+
 ## Notes
 
 - Use lucide-react for icons (no emojis)
@@ -497,3 +647,4 @@ footer (optional)
 - Pattern correction is CRITICAL
 - Audit log all transformations
 - Test with real Excel files from context/
+- All task instructions in `../tasks/` directory
